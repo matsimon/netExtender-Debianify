@@ -1,0 +1,18 @@
+This is a tiny script I hacked together with my poor bash skills.
+It helps to convert the proprietary NetExtender RPMs provided by SonicWALL
+and make a somewhat better Debian package out of it.
+
+Essentally it adds some better dependency management and better cleanup after
+removal.
+
+Just download the NetExtender RPM for one or the other arch and place it in
+the directory of the script.
+
+Then run ./build-debian.sh <Name of RPM> <Version without dashes> <arch>
+
+You will need at least:
+- alien
+- fakeroot
+- patch
+- git-core
+- dpkg-dev
