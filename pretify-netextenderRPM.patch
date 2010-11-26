@@ -1,0 +1,79 @@
+diff --git a/netextender/debian/control b/netextender/debian/control
+index 02562f7..3a267a3 100644
+--- a/netextender/debian/control
++++ b/netextender/debian/control
+@@ -1,11 +1,11 @@
+ Source: netextender
+ Section: alien
+ Priority: extra
+-Maintainer: Mathieu Simon <sim@n-sim-01>
++Maintainer: maintainer <maintainer@example.com>
+ 
+ Package: netextender
+ Architecture: amd64
+-Depends: ${shlibs:Depends}
++Depends: ppp,openjdk-6-jre,libssl0.9.8,libc6
+ Description: SonicWALL NetExtender Linux Client
+  SonicWALL NetExtender Linux Client
+  .
+diff --git a/netextender/debian/copyright b/netextender/debian/copyright
+index b6262ca..dfb4d93 100644
+--- a/netextender/debian/copyright
++++ b/netextender/debian/copyright
+@@ -5,7 +5,7 @@ Copyright: Proprietary
+ 
+ Information from the binary package:
+ Name        : NetExtender                  Relocations: (not relocatable)
+-Version     : 5.0.678                           Vendor: (none)
++Version     : 5.0.678                           Vendor: SonicWALL
+ Release     : 1                             Build Date: Die 14 Sep 2010 01:47:03 CEST
+ Install Date: (not installed)               Build Host: localhost.localdomain
+ Group       : Application/Communication     Source RPM: NetExtender-1.src.rpm
+diff --git a/netextender/debian/postinst b/netextender/debian/postinst
+index 2b8c193..8d41b9b 100644
+--- a/netextender/debian/postinst
++++ b/netextender/debian/postinst
+@@ -14,6 +14,11 @@ else
+ 	chmod 757 /etc/ppp/sslvpnroutecleanup
+ fi
+ 
++# Create symlinks before there is a check for libraries
++ln -s /lib/libssl.so.0.9.8 /lib/libssl.so.6
++ln -s /lib/libcrypto.so.0.9.8 /lib/libcrypto.so.6
++
++
+ # Check library depencencies
+ echo -n "Checking library dependencies..."
+ MISSINGLIBS=`ldd /usr/sbin/netExtender | grep 'not found' | awk '{print $1}'`
+@@ -68,4 +73,4 @@ else
+ 	echo '       Please make sure pppd is installed as /usr/sbin/pppd and try again.'
+ fi
+ 
+-/usr/sbin/netExtender -i
+\ No newline at end of file
++/usr/sbin/netExtender -i
+diff --git a/netextender/debian/postrm b/netextender/debian/postrm
+index f0b27ba..6774217 100644
+--- a/netextender/debian/postrm
++++ b/netextender/debian/postrm
+@@ -10,4 +10,9 @@ else
+ 	rm -f /etc/ppp/sslvpnroutecleanup
+ fi
+ rm -f /etc/ppp/sslvpn.clientip
+-rm -f /etc/ppp/peers/sslvpn.params.diag
+\ No newline at end of file
++rm -f /etc/ppp/peers/sslvpn.params.diag
++
++# Reset ppp  user rights back to ubuntu default.
++chmod -v 4754 /usr/sbin/pppd
++chmod -v 766 /etc/ppp
++chmod -v 2200 /etc/ppp/peers # right?
+diff --git a/netextender/usr/share/netExtender/NetExtender.desktop b/netextender/usr/share/netExtender/NetExtender.desktop
+index 26ddcf7..c8ff39c 100644
+--- a/netextender/usr/share/netExtender/NetExtender.desktop
++++ b/netextender/usr/share/netExtender/NetExtender.desktop
+@@ -7,3 +7,4 @@ Name=NetExtender
+ StartupNotify=false
+ Terminal=false
+ Type=Application
++Categories=Application;Network;Security;
