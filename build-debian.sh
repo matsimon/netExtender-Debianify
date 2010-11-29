@@ -5,34 +5,35 @@
 # You will need alien, fakeroot and what else?
 
 if [[ "$1" == "" && "$2" == "" ]] ; then
-   echo "Usage: build-debian.sh <name of Sonicwall RPM> <version> <arch>"
+   echo "Usage: build-debian.sh <name of Sonicwall RPM> <arch>"
    exit
 fi
 
 if [[ "$2" == "" ]] ; then
-   echo "You forgot version parameter!"
-   echo "Usage: build-debian.sh <name of Sonicwall RPM> <version> <arch>"
-   exit
-fi
-
-if [[ "$3" == "" ]] ; then
    echo "You forgot arch (i386,amd64) parameter!"
-   echo "Usage: build-debian.sh <name of Sonicwall RPM> <version> <arch>"
+   echo "Usage: build-debian.sh <name of Sonicwall RPM> <arch>"
    exit
 fi
 
 # Debian-fashion with some optimizations.
-fakeroot alien --to-deb --generate --scripts --verbose $1
+fakeroot alien --to-deb --generate --scripts --verbose $1 > tmp.txt
 
-echo 'Debianize:' $1
-echo 'You told me Version:' $2
+# SonicWall's package version numbers sometimes don't  match packages name. Great :-(
+NX=$(echo 'NetExtender-'$(tail -1 tmp.txt | cut -f2 -d' ' | cut -f2 -d'-'))
+rm tmp.txt
 
-echo 'GENERATE: Alien prepares Debian package'
-NX='NetExtender-'$2
 mv $NX netextender
 
-# APPLY: Patch for better Debian Package
+# APPLY: Patch for better Debian Package, first generic, then arch specific one.
 patch -p1 < ./pretify-netextenderRPM.patch
+
+if [ "$2" = "i386" ]; then
+    patch -p1 < ./pretify-netextenderi386RPM.patch
+fi
+
+if [ "$2" = "amd64" ]; then
+    patch -p1 < ./pretify-netextenderamd64RPM.patch
+fi
 
 # Users with gnome at least will have a correct Icon in the menu
 mkdir -p netextender/usr/share/applications
@@ -42,7 +43,7 @@ cp netextender/usr/share/netExtender/NetExtender.desktop netextender/usr/share/a
 #  (in case building machine is amd64) and target i386 for example 
 # And -b because it's only binary bits and there is nothing to compiles 
 cd netextender
-dpkg-buildpackage -a$3 -b
+dpkg-buildpackage -a$2 -b
 
 # Cleanup
 cd ..

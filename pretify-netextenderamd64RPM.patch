@@ -1,0 +1,18 @@
+diff --git a/netextender/debian/control b/netextender/debian/control
+index 02562f7..3a267a3 100644
+--- a/netextender/debian/control
++++ b/netextender/debian/control
+@@ -1,11 +1,11 @@
+ Source: netextender
+ Section: alien
+ Priority: extra
+-Maintainer: Mathieu Simon <sim@n-sim-01>
++Maintainer: maintainer <maintainer@example.com>
+ 
+ Package: netextender
+ Architecture: amd64
+-Depends: ${shlibs:Depends}
++Depends: ppp,openjdk-6-jre,libssl0.9.8,libc6
+ Description: SonicWALL NetExtender Linux Client
+  SonicWALL NetExtender Linux Client
+  .
