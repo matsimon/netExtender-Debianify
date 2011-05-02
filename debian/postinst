@@ -16,6 +16,10 @@ else
 	chmod 757 /etc/ppp/sslvpnroutecleanup
 fi
 
+# Create symlinks before there is a check for libraries
+ln -s /lib/libssl.so.0.9.8 /lib/libssl.so.6
+ln -s /lib/libcrypto.so.0.9.8 /lib/libcrypto.so.6
+
 # Check library depencencies
 echo -n "Checking library dependencies..."
 MISSINGLIBS=`ldd /usr/sbin/netExtender | grep 'not found' | awk '{print $1}'`
