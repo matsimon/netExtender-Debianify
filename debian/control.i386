@@ -1,0 +1,12 @@
+Source: netextender
+Section: alien
+Priority: extra
+Maintainer: Mathieu Simon <mathieu.simon@gymkl.ch>
+
+Package: netextender
+Architecture: amd64
+Depends: ppp,openjdk-6-jre,libssl0.9.8,libc6
+Description: SonicWALL NetExtender Linux Client
+ SonicWALL NetExtender Linux Client
+ .
+ (Converted from a rpm package by alien version 8.81.)
