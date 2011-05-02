@@ -1,9 +1,11 @@
+README
+-------
 Since it's still changing a bit so patches don't apply patches 
-everytime I decieded to just pre-modify the postrm, postinst and
-control with dependencies.
+everytime I decided to just pre-modify the postrm, postinst and
+control with dependencies and pre-modify the bits.
 
 Essentally it adds some better dependency management and better cleanup after
-removal compared to the (sorry) mess Sonicwall's package leaves.
+removal compared to the Sonicwall's package that passes alien.
 
 Just download the NetExtender RPM for one or the other arch and place it in
 the directory of the script, and launch the build-debian.sh <RPM> <targetArch>
@@ -14,3 +16,8 @@ You will need at least:
 - patch
 - git-core
 - dpkg-dev
+
+USE
+---
+All original code in here is public domain, and can be used for any purpose.
+
