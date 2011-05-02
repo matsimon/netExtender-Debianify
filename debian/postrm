@@ -12,3 +12,13 @@ else
 fi
 rm -f /etc/ppp/sslvpn.clientip
 rm -f /etc/ppp/peers/sslvpn.params.diag
+
+# Reset ppp  user rights back to ubuntu default.
+chmod -v 4754 /usr/sbin/pppd
+chmod -v 766 /etc/ppp
+chmod -v 2200 /etc/ppp/peers # right?
+
+# Remove symlinks, they shouldn't be in use by any 
+# in-distribution stuff anyway
+rm /lib/libssl.so.6
+rm /lib/libcrypto.so.6
