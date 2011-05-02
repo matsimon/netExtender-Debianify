@@ -1,0 +1,14 @@
+#!/bin/bash
+if [ -d /etc/ppp/ip-up.d -a -d /etc/ppp/ip-down.d ]
+then
+	# SUSE mode
+	rm -f /etc/ppp/ip-up.d/sslvpnroute*
+	rm -f /etc/ppp/ip-down.d/sslvpnroute*
+	rm -f /etc/ppp/ipv6-up.d/sslvpnroute*
+	rm -f /etc/ppp/ipv6-down.d/sslvpnroute*
+else
+	# Non-SUSE mode
+	rm -f /etc/ppp/sslvpnroute*
+fi
+rm -f /etc/ppp/sslvpn.clientip
+rm -f /etc/ppp/peers/sslvpn.params.diag

@@ -1,0 +1,73 @@
+#!/bin/bash
+if [ -d /etc/ppp/ip-up.d -a -d /etc/ppp/ip-down.d ]
+then
+	# SUSE mode
+	touch /etc/ppp/ip-up.d/sslvpnroute
+	chmod 757 /etc/ppp/ip-up.d/sslvpnroute
+	touch /etc/ppp/ip-down.d/sslvpnroutecleanup
+	chmod 757 /etc/ppp/ip-down.d/sslvpnroutecleanup
+	mkdir -p /etc/ppp/ipv6-up.d
+	mkdir -p /etc/ppp/ipv6-down.d
+else
+	# Non-SUSE mode
+	touch /etc/ppp/sslvpnroute
+	chmod 757 /etc/ppp/sslvpnroute
+	touch /etc/ppp/sslvpnroutecleanup
+	chmod 757 /etc/ppp/sslvpnroutecleanup
+fi
+
+# Check library depencencies
+echo -n "Checking library dependencies..."
+MISSINGLIBS=`ldd /usr/sbin/netExtender | grep 'not found' | awk '{print $1}'`
+
+if [ "$MISSINGLIBS" != "" ]
+then
+	echo ""
+	for i in $MISSINGLIBS
+	do
+		echo "  Missing library: $i"
+		FULLNAME="$i"
+		LIBNAME=`echo $i | awk -F. '{print $1 }'`
+		ALT=`find /lib -maxdepth 1 -name "$LIBNAME.so*" -type f | sed 's/\*//g' | sort -r`
+
+		if [ "$ALT" == "" ]
+		then
+			# Didn't find anything in /lib ; try /usr/lib
+			ALT=`find /usr/lib -maxdepth 1 -name "$LIBNAME.so*" -type f | sed 's/\*//g' | sort -r`
+		fi
+
+		if [ "$ALT" != "" ]
+		then
+			echo "  Found likely compatible version: $ALT"
+			echo -n '  Creating symbolic link: '
+			pushd . >/dev/null
+			cd `dirname $ALT`
+			ln -sv `basename $ALT` $FULLNAME
+			popd >/dev/null
+		else
+			# No compatible version found
+			echo "  ERROR: No compatible version found."
+		fi
+	done
+else
+	echo "OK"
+fi
+
+# Check PPPD permissions
+echo -n 'Checking pppd...'
+if [ -f '/usr/sbin/pppd' -a -x '/usr/sbin/pppd' ]
+then
+	echo ''
+	echo 'Setting SETUID on pppd to allow non-root users to run NetExtender'
+	chmod -v u+s /usr/sbin/pppd
+	chmod -v a+x /usr/sbin/pppd
+	chmod -v a+rx /etc/ppp
+	chmod -v -R a+r /etc/ppp/peers
+	chmod -v a+x /etc/ppp/peers
+else
+	echo ''
+	echo 'ERROR: NetExtender requires a working installation of pppd.'
+	echo '       Please make sure pppd is installed as /usr/sbin/pppd and try again.'
+fi
+
+/usr/sbin/netExtender -i
