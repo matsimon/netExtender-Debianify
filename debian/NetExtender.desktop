@@ -7,3 +7,4 @@ Name=NetExtender
 StartupNotify=false
 Terminal=false
 Type=Application
+Categories=Application;Network;Security;
