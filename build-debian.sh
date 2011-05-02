@@ -15,6 +15,8 @@ if [[ "$2" == "" ]] ; then
    exit
 fi
 
+rm -rf netextender
+
 # Debian-fashion with some optimizations.
 fakeroot alien --to-deb --generate --scripts --verbose $1 > tmp.txt
 
@@ -24,29 +26,31 @@ rm tmp.txt
 
 mv $NX netextender
 
-# APPLY: Patch for better Debian Package, first generic, then arch specific one.
-patch -p1 < ./pretify-netextenderRPM.patch
-
-if [ "$2" = "i386" ]; then
-    patch -p1 < ./pretify-netextenderi386RPM.patch
-fi
-
-if [ "$2" = "amd64" ]; then
-    patch -p1 < ./pretify-netextenderamd64RPM.patch
-fi
+# Copy some prepared files so we don't have to patch anymore, less error-prone
+cp -v debian/postinst netextender/debian/
+cp -v debian/postrm netextender/debian/
+cp -v debian/control.$2 netextender/debian/control
 
 # Users with gnome at least will have a correct Icon in the menu
 mkdir -p netextender/usr/share/applications
-cp netextender/usr/share/netExtender/NetExtender.desktop netextender/usr/share/applications/
+cp -v debian/NetExtender.desktop netextender/usr/share/applications/
+
+echo OK, I did the 
+echo - Uncompress the RPM
+echo - Copy some files for better Debian package
+echo - Add you a nice icon in the gnome menu
+echo
+echo  Now we gonna package that kid
+read
 
 # Build package use explicitely with arch parameter
 #  (in case building machine is amd64) and target i386 for example 
 # And -b because it's only binary bits and there is nothing to compiles 
 cd netextender
-dpkg-buildpackage -a$2 -b
+# 
+echo "dpkg-buildpackage -a$2 -b"
 
 # Cleanup
 cd ..
-rm -rf netextender
+# rm -rf netextender
 rm -rf $NX.orig
-
