@@ -1,0 +1,9 @@
+[Desktop Entry]
+Encoding=UTF-8
+Exec=/usr/bin/netExtenderGui
+GenericName=SonicWALL SSL-VPN NetExtender
+Icon=/usr/share/netExtender/icons/nx128.xpm
+Name=NetExtender
+StartupNotify=false
+Terminal=false
+Type=Application
